@@ -1,0 +1,1049 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2868
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww18360\viewh18000\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 <!DOCTYPE html>\
+<html lang="en">\
+<head>\
+<meta charset="UTF-8">\
+<meta name="viewport" content="width=device-width, initial-scale=1.0">\
+<title>Bar Golf \uc0\u9971 </title>\
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">\
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>\
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>\
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>\
+<style>\
+  :root \{\
+    --green: #2d6a4f;\
+    --green-light: #52b788;\
+    --green-pale: #d8f3dc;\
+    --cream: #fefae0;\
+    --amber: #e9c46a;\
+    --amber-dark: #c9a227;\
+    --red: #e63946;\
+    --purple: #6a4c93;\
+    --bg: #0a1628;\
+    --bg2: #111f38;\
+    --bg3: #192847;\
+    --surface: #1e3050;\
+    --surface2: #243660;\
+    --border: rgba(255,255,255,0.08);\
+    --border2: rgba(255,255,255,0.14);\
+    --text: #f0f4f8;\
+    --text2: #8fa3bf;\
+    --text3: #5a7390;\
+    --font-head: 'Bebas Neue', sans-serif;\
+    --font-body: 'DM Sans', sans-serif;\
+    --font-mono: 'DM Mono', monospace;\
+    --r: 12px;\
+    --r-sm: 8px;\
+  \}\
+  * \{ box-sizing: border-box; margin: 0; padding: 0; \}\
+  html, body \{ height: 100%; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 15px; line-height: 1.5; \}\
+  body \{ display: flex; flex-direction: column; min-height: 100vh; \}\
+\
+  /* Background texture */\
+  body::before \{\
+    content: '';\
+    position: fixed; inset: 0; z-index: 0;\
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(82,183,136,0.07) 0%, transparent 70%),\
+                radial-gradient(ellipse 60% 40% at 80% 80%, rgba(45,106,79,0.05) 0%, transparent 60%);\
+    pointer-events: none;\
+  \}\
+\
+  .app \{ position: relative; z-index: 1; max-width: 480px; margin: 0 auto; width: 100%; padding: 0 16px 80px; flex: 1; \}\
+\
+  /* Screens */\
+  .screen \{ display: none; padding-top: 24px; \}\
+  .screen.active \{ display: block; \}\
+\
+  /* Header */\
+  .top-bar \{ display: flex; align-items: center; justify-content: space-between; padding: 16px 0 4px; \}\
+  .logo \{ font-family: var(--font-head); font-size: 32px; color: var(--green-light); letter-spacing: 1px; line-height: 1; \}\
+  .logo span \{ color: var(--amber); \}\
+\
+  /* Typography */\
+  h1 \{ font-family: var(--font-head); font-size: 48px; letter-spacing: 1px; line-height: 1; color: var(--text); \}\
+  h2 \{ font-family: var(--font-head); font-size: 28px; letter-spacing: 0.5px; color: var(--text); margin-bottom: 4px; \}\
+  h3 \{ font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--text2); margin-bottom: 12px; \}\
+\
+  /* Cards */\
+  .card \{ background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 16px; margin-bottom: 12px; \}\
+  .card-accent \{ border-color: rgba(82,183,136,0.3); background: linear-gradient(135deg, var(--surface) 0%, rgba(45,106,79,0.2) 100%); \}\
+\
+  /* Buttons */\
+  .btn \{ display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px; border-radius: var(--r-sm); border: none; font-family: var(--font-body); font-size: 15px; font-weight: 500; cursor: pointer; transition: all 0.15s; text-align: center; \}\
+  .btn:active \{ transform: scale(0.97); \}\
+  .btn-primary \{ background: var(--green-light); color: #0a1628; font-weight: 600; \}\
+  .btn-primary:hover \{ background: #66c99a; \}\
+  .btn-secondary \{ background: var(--surface2); color: var(--text); border: 1px solid var(--border2); \}\
+  .btn-secondary:hover \{ background: var(--bg3); \}\
+  .btn-ghost \{ background: transparent; color: var(--text2); border: 1px solid var(--border); \}\
+  .btn-ghost:hover \{ background: var(--surface); color: var(--text); \}\
+  .btn-danger \{ background: rgba(230,57,70,0.15); color: #ff6b6b; border: 1px solid rgba(230,57,70,0.3); \}\
+  .btn-danger:hover \{ background: rgba(230,57,70,0.25); \}\
+  .btn-full \{ width: 100%; \}\
+  .btn-icon \{ width: 40px; height: 40px; padding: 0; border-radius: var(--r-sm); \}\
+\
+  /* Inputs */\
+  input[type=text], input[type=number] \{\
+    width: 100%; height: 44px; padding: 0 12px;\
+    background: var(--bg2); border: 1px solid var(--border2);\
+    border-radius: var(--r-sm); color: var(--text);\
+    font-family: var(--font-body); font-size: 15px;\
+    outline: none; transition: border-color 0.15s;\
+  \}\
+  input:focus \{ border-color: var(--green-light); \}\
+  input::placeholder \{ color: var(--text3); \}\
+\
+  select \{\
+    height: 44px; padding: 0 12px;\
+    background: var(--bg2); border: 1px solid var(--border2);\
+    border-radius: var(--r-sm); color: var(--text);\
+    font-family: var(--font-body); font-size: 15px;\
+    outline: none; cursor: pointer;\
+    appearance: none;\
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%235a7390' d='M6 8L1 3h10z'/%3E%3C/svg%3E");\
+    background-repeat: no-repeat;\
+    background-position: right 12px center;\
+    padding-right: 32px;\
+  \}\
+\
+  /* Tags / badges */\
+  .badge \{ display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; \}\
+  .badge-green \{ background: rgba(82,183,136,0.15); color: var(--green-light); border: 1px solid rgba(82,183,136,0.3); \}\
+  .badge-amber \{ background: rgba(233,196,106,0.15); color: var(--amber); border: 1px solid rgba(233,196,106,0.3); \}\
+  .badge-red \{ background: rgba(230,57,70,0.12); color: #ff6b6b; border: 1px solid rgba(230,57,70,0.25); \}\
+  .badge-purple \{ background: rgba(106,76,147,0.2); color: #b39ddb; border: 1px solid rgba(106,76,147,0.35); \}\
+  .badge-gray \{ background: rgba(255,255,255,0.06); color: var(--text2); border: 1px solid var(--border); \}\
+\
+  /* Avatar */\
+  .avatar \{ width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; flex-shrink: 0; font-family: var(--font-body); \}\
+\
+  /* Hole dots */\
+  .hole-dots \{ display: flex; gap: 6px; flex-wrap: wrap; \}\
+  .hole-dot \{ width: 10px; height: 10px; border-radius: 50%; background: var(--surface2); border: 1px solid var(--border2); cursor: pointer; transition: all 0.15s; \}\
+  .hole-dot.done \{ background: var(--green-light); border-color: var(--green-light); \}\
+  .hole-dot.current \{ background: var(--amber); border-color: var(--amber); transform: scale(1.3); \}\
+\
+  /* Sip picker */\
+  .sip-grid \{ display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-top: 8px; \}\
+  .sip-btn \{\
+    height: 48px; border-radius: var(--r-sm); border: 1px solid var(--border2);\
+    background: var(--bg2); color: var(--text2);\
+    font-family: var(--font-mono); font-size: 14px; font-weight: 500;\
+    cursor: pointer; transition: all 0.15s; display: flex;\
+    align-items: center; justify-content: center; flex-direction: column;\
+    gap: 2px;\
+  \}\
+  .sip-btn .sip-label \{ font-size: 9px; font-family: var(--font-body); color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; \}\
+  .sip-btn:hover \{ border-color: var(--green-light); color: var(--text); \}\
+  .sip-btn.sel-1 \{ background: rgba(106,76,147,0.25); border-color: #b39ddb; color: #e8d5fb; \}\
+  .sip-btn.sel-2 \{ background: rgba(82,183,136,0.2); border-color: var(--green-light); color: var(--green-pale); \}\
+  .sip-btn.sel-3 \{ background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.25); color: var(--text); \}\
+  .sip-btn.sel-4 \{ background: rgba(233,196,106,0.15); border-color: var(--amber); color: var(--amber); \}\
+  .sip-btn.sel-high \{ background: rgba(230,57,70,0.15); border-color: #ff6b6b; color: #ff6b6b; \}\
+\
+  /* Player row in scoring */\
+  .player-block \{ padding: 14px 0; border-bottom: 1px solid var(--border); \}\
+  .player-block:last-child \{ border-bottom: none; \}\
+\
+  /* Leaderboard row */\
+  .lb-row \{ display: grid; grid-template-columns: 28px 40px 1fr auto 52px; align-items: center; gap: 8px; padding: 12px 0; border-bottom: 1px solid var(--border); \}\
+  .lb-row:last-child \{ border-bottom: none; \}\
+  .lb-rank \{ font-family: var(--font-mono); font-size: 13px; color: var(--text3); text-align: center; \}\
+  .lb-score \{ font-family: var(--font-head); font-size: 28px; color: var(--text); text-align: right; line-height: 1; \}\
+  .lb-name \{ font-size: 15px; font-weight: 500; \}\
+  .lb-holes \{ font-size: 12px; color: var(--text3); \}\
+  .lb-photos \{ font-size: 11px; color: var(--text3); \}\
+\
+  /* Scorecard table */\
+  .sc-table \{ width: 100%; border-collapse: collapse; font-size: 12px; \}\
+  .sc-table th \{ padding: 6px 4px; text-align: center; color: var(--text3); font-weight: 500; border-bottom: 1px solid var(--border); font-family: var(--font-mono); \}\
+  .sc-table td \{ padding: 6px 4px; text-align: center; border-bottom: 1px solid var(--border); \}\
+  .sc-table tr:last-child td \{ border-bottom: none; font-weight: 600; \}\
+  .sc-cell \{ display: inline-block; width: 24px; height: 24px; line-height: 24px; border-radius: 4px; font-size: 12px; font-family: var(--font-mono); \}\
+  .sc-hole-in-one \{ background: rgba(106,76,147,0.3); color: #e8d5fb; \}\
+  .sc-birdie \{ background: rgba(82,183,136,0.25); color: var(--green-light); \}\
+  .sc-par \{ background: rgba(255,255,255,0.06); color: var(--text2); \}\
+  .sc-bogey \{ background: rgba(233,196,106,0.15); color: var(--amber); \}\
+  .sc-double \{ background: rgba(230,57,70,0.15); color: #ff6b6b; \}\
+\
+  /* Photo */\
+  .photo-upload-area \{ display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; padding: 10px; border: 1px dashed var(--border2); border-radius: var(--r-sm); cursor: pointer; color: var(--text3); font-size: 13px; transition: all 0.15s; \}\
+  .photo-upload-area:hover \{ border-color: var(--green-light); color: var(--green-light); \}\
+  .photo-thumb \{ width: 72px; height: 72px; object-fit: cover; border-radius: var(--r-sm); border: 1px solid var(--border2); cursor: pointer; \}\
+\
+  /* Score guide strip */\
+  .score-guide \{ display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 16px; \}\
+  .guide-item \{ padding: 8px 6px; border-radius: var(--r-sm); text-align: center; font-size: 11px; \}\
+  .guide-val \{ font-family: var(--font-head); font-size: 20px; margin-bottom: 2px; \}\
+  .guide-label \{ font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.8; \}\
+\
+  /* Nav */\
+  .nav-bar \{ display: flex; align-items: center; gap: 10px; margin-bottom: 20px; \}\
+  .nav-bar .nav-title \{ flex: 1; \}\
+\
+  /* Tabs */\
+  .tabs \{ display: flex; gap: 2px; background: var(--bg2); border-radius: var(--r-sm); padding: 3px; margin-bottom: 16px; \}\
+  .tab-btn \{ flex: 1; padding: 8px; border-radius: 6px; background: transparent; border: none; color: var(--text3); font-family: var(--font-body); font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.15s; \}\
+  .tab-btn.active \{ background: var(--surface2); color: var(--text); \}\
+\
+  /* QR section */\
+  #qr-container \{ display: flex; justify-content: center; padding: 16px; \}\
+  #qr-container canvas, #qr-container img \{ border-radius: 8px; \}\
+\
+  /* Join code display */\
+  .join-code \{ font-family: var(--font-head); font-size: 52px; letter-spacing: 8px; text-align: center; color: var(--amber); padding: 12px; \}\
+\
+  /* Stat cards */\
+  .stat-grid \{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; \}\
+  .stat-card \{ background: var(--bg2); border-radius: var(--r-sm); padding: 12px; text-align: center; \}\
+  .stat-val \{ font-family: var(--font-head); font-size: 28px; color: var(--text); \}\
+  .stat-lbl \{ font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; \}\
+\
+  /* Toast */\
+  #toast \{\
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);\
+    background: var(--surface2); border: 1px solid var(--border2); border-radius: var(--r-sm);\
+    padding: 10px 20px; font-size: 13px; color: var(--text2); z-index: 999;\
+    opacity: 0; transition: all 0.25s; pointer-events: none; white-space: nowrap;\
+  \}\
+  #toast.show \{ opacity: 1; transform: translateX(-50%) translateY(0); \}\
+\
+  /* Loader */\
+  .loader \{ display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 60px 0; color: var(--text3); \}\
+  .spinner \{ width: 32px; height: 32px; border: 2px solid var(--border2); border-top-color: var(--green-light); border-radius: 50%; animation: spin 0.7s linear infinite; \}\
+  @keyframes spin \{ to \{ transform: rotate(360deg); \} \}\
+\
+  /* Winner banner */\
+  .winner-banner \{ text-align: center; padding: 24px 16px; background: linear-gradient(135deg, rgba(45,106,79,0.3), rgba(82,183,136,0.1)); border: 1px solid rgba(82,183,136,0.3); border-radius: var(--r); margin-bottom: 16px; \}\
+  .winner-trophy \{ font-size: 48px; margin-bottom: 8px; \}\
+  .winner-name \{ font-family: var(--font-head); font-size: 36px; color: var(--amber); \}\
+\
+  /* Divider */\
+  .divider \{ height: 1px; background: var(--border); margin: 16px 0; \}\
+\
+  /* Firebase config notice */\
+  .config-notice \{ background: rgba(233,196,106,0.1); border: 1px solid rgba(233,196,106,0.3); border-radius: var(--r-sm); padding: 14px; margin-bottom: 16px; \}\
+  .config-notice p \{ font-size: 13px; color: var(--amber); margin-bottom: 4px; \}\
+  .config-notice code \{ font-family: var(--font-mono); font-size: 11px; color: var(--text2); \}\
+\
+  /* Scrollable overflow area */\
+  .overflow-x \{ overflow-x: auto; \}\
+\
+  /* Utility */\
+  .flex \{ display: flex; \}\
+  .items-center \{ align-items: center; \}\
+  .justify-between \{ justify-content: space-between; \}\
+  .gap-8 \{ gap: 8px; \}\
+  .gap-12 \{ gap: 12px; \}\
+  .mb-4 \{ margin-bottom: 4px; \}\
+  .mb-8 \{ margin-bottom: 8px; \}\
+  .mb-12 \{ margin-bottom: 12px; \}\
+  .mb-16 \{ margin-bottom: 16px; \}\
+  .mb-24 \{ margin-bottom: 24px; \}\
+  .text-muted \{ color: var(--text2); \}\
+  .text-sm \{ font-size: 13px; \}\
+  .text-xs \{ font-size: 11px; \}\
+  .fw-500 \{ font-weight: 500; \}\
+  .w-full \{ width: 100%; \}\
+</style>\
+</head>\
+<body>\
+\
+<div id="firebase-banner" class="config-notice" style="margin:12px 16px;display:none;">\
+  <p>\uc0\u9888 \u65039  Firebase not configured \'97 running in offline mode</p>\
+  <code>Replace the firebaseConfig object in this file with your own Firebase config to enable live sync.</code>\
+</div>\
+\
+<div class="app">\
+\
+  <!-- \uc0\u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552  SCREEN: HOME \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552  -->\
+  <div id="screen-home" class="screen active">\
+    <div style="padding: 40px 0 32px; text-align: center;">\
+      <div style="font-size: 56px; margin-bottom: 12px;">\uc0\u9971 </div>\
+      <h1 style="margin-bottom: 8px;">BAR<span style="color: var(--green-light);">GOLF</span></h1>\
+      <p class="text-muted text-sm">The only sport that gets better after a drink</p>\
+    </div>\
+\
+    <div class="card card-accent mb-12">\
+      <h3>Start a round</h3>\
+      <button class="btn btn-primary btn-full" onclick="goTo('create')">\
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>\
+        Create new round\
+      </button>\
+    </div>\
+\
+    <div class="card mb-12">\
+      <h3>Join a round</h3>\
+      <div class="flex gap-8 mb-8">\
+        <input type="text" id="join-code-input" placeholder="Enter 4-letter code" maxlength="6" style="text-transform:uppercase;font-family:var(--font-mono);font-size:18px;letter-spacing:4px;" oninput="this.value=this.value.toUpperCase()" />\
+        <button class="btn btn-secondary" onclick="joinRound()" style="white-space:nowrap;flex-shrink:0;">Join</button>\
+      </div>\
+      <p class="text-xs text-muted">Get the code from whoever set up the round</p>\
+    </div>\
+\
+    <div style="text-align:center;padding:12px 0;">\
+      <p class="text-xs text-muted">Round data syncs live across all devices</p>\
+    </div>\
+  </div>\
+\
+  <!-- \uc0\u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552  SCREEN: CREATE \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552  -->\
+  <div id="screen-create" class="screen">\
+    <div class="nav-bar">\
+      <button class="btn btn-ghost btn-icon" onclick="goTo('home')">\
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>\
+      </button>\
+      <div class="nav-title"><h2>New Round</h2></div>\
+    </div>\
+\
+    <div class="score-guide">\
+      <div class="guide-item" style="background:rgba(106,76,147,0.2);border:1px solid rgba(106,76,147,0.3);">\
+        <div class="guide-val" style="color:#e8d5fb;">1</div>\
+        <div class="guide-label" style="color:#b39ddb;">Hole in one</div>\
+      </div>\
+      <div class="guide-item" style="background:rgba(82,183,136,0.15);border:1px solid rgba(82,183,136,0.25);">\
+        <div class="guide-val" style="color:var(--green-light);">2</div>\
+        <div class="guide-label" style="color:var(--green-light);">Birdie</div>\
+      </div>\
+      <div class="guide-item" style="background:rgba(255,255,255,0.05);border:1px solid var(--border);">\
+        <div class="guide-val" style="color:var(--text);">3</div>\
+        <div class="guide-label" style="color:var(--text3);">Par</div>\
+      </div>\
+      <div class="guide-item" style="background:rgba(233,196,106,0.12);border:1px solid rgba(233,196,106,0.25);">\
+        <div class="guide-val" style="color:var(--amber);">4+</div>\
+        <div class="guide-label" style="color:var(--amber);">Bogey+</div>\
+      </div>\
+    </div>\
+\
+    <div class="card mb-12">\
+      <h3>Course settings</h3>\
+      <div class="flex gap-8 mb-8">\
+        <div style="flex:1;">\
+          <p class="text-xs text-muted mb-4">Holes</p>\
+          <select id="create-holes" style="width:100%;">\
+            <option value="9">9 holes</option>\
+            <option value="18">18 holes</option>\
+          </select>\
+        </div>\
+      </div>\
+      <div>\
+        <p class="text-xs text-muted mb-4">Round name (optional)</p>\
+        <input type="text" id="create-name" placeholder="e.g. Friday Night Bar Golf" />\
+      </div>\
+    </div>\
+\
+    <div class="card mb-12">\
+      <div class="flex items-center justify-between mb-12">\
+        <h3 style="margin:0;">Players</h3>\
+        <button class="btn btn-ghost" style="padding:6px 12px;font-size:13px;" onclick="addCreatePlayer()">\
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>\
+          Add player\
+        </button>\
+      </div>\
+      <div id="create-players"></div>\
+    </div>\
+\
+    <button class="btn btn-primary btn-full" onclick="createRound()" style="font-size:16px;height:52px;">\
+      Start Round\
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>\
+    </button>\
+  </div>\
+\
+  <!-- \uc0\u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552  SCREEN: LOBBY \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552  -->\
+  <div id="screen-lobby" class="screen">\
+    <div class="nav-bar">\
+      <button class="btn btn-ghost btn-icon" onclick="goTo('home')">\
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>\
+      </button>\
+      <div class="nav-title"><h2>Share Round</h2></div>\
+    </div>\
+\
+    <div class="card card-accent mb-12" style="text-align:center;">\
+      <p class="text-xs text-muted mb-4">Round code</p>\
+      <div class="join-code" id="lobby-code">----</div>\
+      <p class="text-xs text-muted mb-12">Friends enter this code on their phones</p>\
+      <button class="btn btn-secondary" onclick="copyCode()" style="font-size:13px;padding:8px 16px;">\
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>\
+        Copy link\
+      </button>\
+    </div>\
+\
+    <div class="card mb-12">\
+      <h3>QR code</h3>\
+      <div id="qr-container"></div>\
+      <p class="text-xs text-muted" style="text-align:center;margin-top:8px;">Scan to join on any phone</p>\
+    </div>\
+\
+    <div class="card mb-12">\
+      <h3 id="lobby-players-title">Players (0)</h3>\
+      <div id="lobby-player-list"></div>\
+    </div>\
+\
+    <button class="btn btn-primary btn-full" style="font-size:16px;height:52px;" onclick="startScoring()">\
+      Start Scoring\
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>\
+    </button>\
+  </div>\
+\
+  <!-- \uc0\u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552  SCREEN: SCORING \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552  -->\
+  <div id="screen-scoring" class="screen">\
+    <div class="nav-bar">\
+      <button class="btn btn-ghost btn-icon" onclick="goTo('lobby')">\
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>\
+      </button>\
+      <div class="nav-title">\
+        <div style="font-family:var(--font-head);font-size:20px;color:var(--text);" id="scoring-hole-title">HOLE 1</div>\
+        <div class="text-xs text-muted" id="scoring-subtitle">Par 3 sips</div>\
+      </div>\
+      <button class="btn btn-ghost btn-icon" onclick="goTo('leaderboard')">\
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>\
+      </button>\
+    </div>\
+\
+    <div class="hole-dots mb-16" id="scoring-dots"></div>\
+\
+    <div class="card mb-12">\
+      <p class="text-xs text-muted mb-4">Bar name (optional)</p>\
+      <input type="text" id="scoring-bar-name" placeholder="e.g. The Anchor" oninput="saveBarName()" />\
+    </div>\
+\
+    <div class="card mb-12">\
+      <h3>Enter scores</h3>\
+      <div id="scoring-players"></div>\
+    </div>\
+\
+    <div class="flex gap-8">\
+      <button class="btn btn-ghost" onclick="prevHole()" id="btn-prev" style="flex:0 0 auto;width:52px;height:52px;padding:0;">\
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>\
+      </button>\
+      <button class="btn btn-primary btn-full" id="btn-next" onclick="nextHole()" style="height:52px;font-size:15px;">\
+        Next hole\
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>\
+      </button>\
+      <button class="btn btn-ghost" onclick="goTo('leaderboard')" style="flex:0 0 auto;width:52px;height:52px;padding:0;">\
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>\
+      </button>\
+    </div>\
+  </div>\
+\
+  <!-- \uc0\u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552  SCREEN: LEADERBOARD \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552  -->\
+  <div id="screen-leaderboard" class="screen">\
+    <div class="nav-bar">\
+      <button class="btn btn-ghost btn-icon" onclick="goTo('scoring')">\
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>\
+      </button>\
+      <div class="nav-title"><h2>Leaderboard</h2></div>\
+      <button class="btn btn-ghost" style="padding:8px 12px;font-size:13px;" onclick="goTo('summary')">\
+        Finish <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>\
+      </button>\
+    </div>\
+\
+    <div class="tabs">\
+      <button class="tab-btn active" id="tab-live-btn" onclick="switchTab('live')">Live standings</button>\
+      <button class="tab-btn" id="tab-card-btn" onclick="switchTab('card')">Scorecard</button>\
+    </div>\
+\
+    <div id="tab-live">\
+      <div id="lb-list"></div>\
+      <p class="text-xs text-muted" style="text-align:center;margin-top:12px;">Fewer sips = better golfer</p>\
+    </div>\
+    <div id="tab-card" style="display:none;">\
+      <div class="overflow-x">\
+        <table class="sc-table" id="scorecard"></table>\
+      </div>\
+    </div>\
+  </div>\
+\
+  <!-- \uc0\u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552  SCREEN: SUMMARY \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552 \u9552  -->\
+  <div id="screen-summary" class="screen">\
+    <div class="nav-bar">\
+      <button class="btn btn-ghost btn-icon" onclick="goTo('leaderboard')">\
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>\
+      </button>\
+      <div class="nav-title"><h2>Round Summary</h2></div>\
+    </div>\
+    <div id="summary-content"></div>\
+    <div class="flex gap-8" style="margin-top:16px;">\
+      <button class="btn btn-secondary" onclick="goTo('scoring')" style="flex:1;">Back to scoring</button>\
+      <button class="btn btn-danger" onclick="confirmNewRound()">New round</button>\
+    </div>\
+  </div>\
+\
+</div><!-- /app -->\
+\
+<div id="toast"></div>\
+\
+<script>\
+// \uc0\u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \
+// FIREBASE CONFIG \'97 replace with yours\
+// \uc0\u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \
+const firebaseConfig = \{\
+  apiKey: "AIzaSyCPPWfaXl32fIjQotdC9l1bp8lSbKTg42k",\
+  authDomain: "bar-golf-52a7f.firebaseapp.com",\
+  databaseURL: "https://bar-golf-52a7f-default-rtdb.firebaseio.com",\
+  projectId: "bar-golf-52a7f",\
+  storageBucket: "bar-golf-52a7f.firebasestorage.app",\
+  messagingSenderId: "291641268485",\
+  appId: "1:291641268485:web:6b3b43acfb96c5d7f5bf6c",\
+  measurementId: "G-N3GBK7B8GE"\
+\};\
+\
+// \uc0\u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \
+// INIT\
+// \uc0\u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \
+let db = null;\
+let offlineMode = false;\
+\
+function initFirebase() \{\
+  try \{\
+    if (firebaseConfig.apiKey === "REPLACE_WITH_YOUR_API_KEY") \{\
+      offlineMode = true;\
+      document.getElementById('firebase-banner').style.display = 'block';\
+      console.warn('Firebase not configured \'97 running offline');\
+      return;\
+    \}\
+    firebase.initializeApp(firebaseConfig);\
+    db = firebase.database();\
+  \} catch(e) \{\
+    offlineMode = true;\
+    document.getElementById('firebase-banner').style.display = 'block';\
+    console.warn('Firebase error:', e);\
+  \}\
+\}\
+\
+// \uc0\u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \
+// STATE\
+// \uc0\u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \
+const PAR = 3;\
+const COLORS = [\
+  \{ bg:'rgba(106,76,147,0.25)', text:'#e8d5fb' \},\
+  \{ bg:'rgba(82,183,136,0.2)',  text:'#d8f3dc' \},\
+  \{ bg:'rgba(233,196,106,0.15)',text:'#fae8a0' \},\
+  \{ bg:'rgba(230,57,70,0.15)',  text:'#ffb3b8' \},\
+  \{ bg:'rgba(56,142,210,0.2)',  text:'#bde0ff' \},\
+  \{ bg:'rgba(255,180,0,0.15)',  text:'#ffe8a0' \},\
+  \{ bg:'rgba(0,200,180,0.15)',  text:'#a0fff4' \},\
+  \{ bg:'rgba(255,100,80,0.15)', text:'#ffc8b8' \},\
+];\
+\
+let state = \{\
+  roundCode: null,\
+  roundName: '',\
+  numHoles: 9,\
+  players: [],\
+  scores: \{\},\
+  barNames: \{\},\
+  photos: \{\},\
+  currentHole: 0,\
+  isHost: false\
+\};\
+let roundRef = null;\
+let unsubscribe = null;\
+\
+function initials(n) \{ return (n||'?').trim().split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2)||'?'; \}\
+function avatarStyle(i) \{ const c=COLORS[i%COLORS.length]; return `background:$\{c.bg\};color:$\{c.text\};border:1px solid $\{c.text\}30;`; \}\
+\
+// \uc0\u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \
+// NAVIGATION\
+// \uc0\u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \
+function goTo(screen) \{\
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));\
+  document.getElementById('screen-'+screen).classList.add('active');\
+  window.scrollTo(0,0);\
+  if (screen==='lobby') renderLobby();\
+  if (screen==='scoring') renderScoring();\
+  if (screen==='leaderboard') renderLeaderboard();\
+  if (screen==='summary') renderSummary();\
+\}\
+\
+// \uc0\u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \
+// ROUND CODE\
+// \uc0\u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \
+function genCode() \{\
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';\
+  return Array.from(\{length:4\},()=>chars[Math.floor(Math.random()*chars.length)]).join('');\
+\}\
+\
+// \uc0\u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \
+// CREATE SCREEN\
+// \uc0\u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \
+let createPlayers = [];\
+\
+function addCreatePlayer() \{\
+  createPlayers.push(\{ name: '' \});\
+  renderCreatePlayers();\
+  setTimeout(()=>\{ const inputs=document.querySelectorAll('#create-players input'); inputs[inputs.length-1]?.focus(); \},50);\
+\}\
+\
+function renderCreatePlayers() \{\
+  const el = document.getElementById('create-players');\
+  if (!createPlayers.length) \{\
+    el.innerHTML = '<p class="text-sm text-muted" style="padding:8px 0;">Add at least one player to start</p>';\
+    return;\
+  \}\
+  el.innerHTML = createPlayers.map((p,i)=>`\
+    <div class="flex items-center gap-8" style="padding:6px 0;border-bottom:1px solid var(--border);">\
+      <div class="avatar" style="$\{avatarStyle(i)\}">$\{p.name?initials(p.name):i+1\}</div>\
+      <input type="text" value="$\{p.name\}" placeholder="Player $\{i+1\}" style="flex:1;" oninput="createPlayers[$\{i\}].name=this.value;updateAvatarPreview($\{i\})" />\
+      <button class="btn btn-danger btn-icon" onclick="removeCreatePlayer($\{i\})">\
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>\
+      </button>\
+    </div>`).join('');\
+\}\
+\
+function updateAvatarPreview(i) \{\
+  const avatars = document.querySelectorAll('#create-players .avatar');\
+  if (avatars[i]) avatars[i].textContent = createPlayers[i].name ? initials(createPlayers[i].name) : i+1;\
+\}\
+\
+function removeCreatePlayer(i) \{ createPlayers.splice(i,1); renderCreatePlayers(); \}\
+\
+async function createRound() \{\
+  const names = createPlayers.map(p=>p.name.trim()||`Player $\{createPlayers.indexOf(p)+1\}`);\
+  if (!names.length) \{ showToast('Add at least one player!'); return; \}\
+\
+  const code = genCode();\
+  state.roundCode = code;\
+  state.roundName = document.getElementById('create-name').value || 'Bar Golf';\
+  state.numHoles = parseInt(document.getElementById('create-holes').value);\
+  state.players = names;\
+  state.scores = \{\};\
+  state.barNames = \{\};\
+  state.photos = \{\};\
+  state.currentHole = 0;\
+  state.isHost = true;\
+\
+  if (!offlineMode && db) \{\
+    roundRef = db.ref('rounds/'+code);\
+    await roundRef.set(\{\
+      name: state.roundName,\
+      numHoles: state.numHoles,\
+      players: state.players,\
+      scores: \{\},\
+      barNames: \{\},\
+      currentHole: 0,\
+      createdAt: Date.now()\
+    \});\
+    listenToRound();\
+  \}\
+\
+  saveLocal();\
+  goTo('lobby');\
+\}\
+\
+// \uc0\u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \
+// JOIN ROUND\
+// \uc0\u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \
+async function joinRound() \{\
+  const code = document.getElementById('join-code-input').value.trim().toUpperCase();\
+  if (code.length < 3) \{ showToast('Enter a valid code'); return; \}\
+\
+  if (offlineMode) \{ showToast('Offline mode \'97 sharing not available'); return; \}\
+\
+  const snap = await db.ref('rounds/'+code).once('value');\
+  if (!snap.exists()) \{ showToast('Round not found!'); return; \}\
+\
+  const data = snap.val();\
+  state.roundCode = code;\
+  state.roundName = data.name || 'Bar Golf';\
+  state.numHoles = data.numHoles || 9;\
+  state.players = data.players || [];\
+  state.scores = data.scores || \{\};\
+  state.barNames = data.barNames || \{\};\
+  state.photos = \{\};\
+  state.currentHole = data.currentHole || 0;\
+  state.isHost = false;\
+\
+  roundRef = db.ref('rounds/'+code);\
+  listenToRound();\
+  saveLocal();\
+  goTo('scoring');\
+\}\
+\
+// \uc0\u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \
+// FIREBASE SYNC\
+// \uc0\u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \
+function listenToRound() \{\
+  if (!roundRef) return;\
+  if (unsubscribe) unsubscribe();\
+  const listener = roundRef.on('value', snap => \{\
+    if (!snap.exists()) return;\
+    const d = snap.val();\
+    state.players = d.players || state.players;\
+    state.numHoles = d.numHoles || state.numHoles;\
+    state.scores = d.scores || \{\};\
+    state.barNames = d.barNames || \{\};\
+    const activeScreen = document.querySelector('.screen.active')?.id;\
+    if (activeScreen==='screen-lobby') renderLobby();\
+    if (activeScreen==='screen-scoring') renderScoring();\
+    if (activeScreen==='screen-leaderboard') renderLeaderboard();\
+    if (activeScreen==='screen-summary') renderSummary();\
+  \});\
+  unsubscribe = () => roundRef.off('value', listener);\
+\}\
+\
+async function pushToFirebase() \{\
+  if (offlineMode || !roundRef) return;\
+  await roundRef.update(\{\
+    scores: state.scores,\
+    barNames: state.barNames,\
+    currentHole: state.currentHole,\
+    players: state.players\
+  \});\
+\}\
+\
+// \uc0\u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \
+// LOCAL STORAGE\
+// \uc0\u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \
+function saveLocal() \{\
+  try \{\
+    const s = \{ ...state \};\
+    delete s.photos; // don't store base64 photos in firebase, keep local only\
+    localStorage.setItem('bargolf_v3', JSON.stringify(s));\
+    // photos stored separately\
+    const photos = \{\};\
+    for (const k in state.photos) \{ try \{ localStorage.setItem('bgp_'+k, state.photos[k]); photos[k]=true; \} catch(e)\{\} \}\
+    localStorage.setItem('bargolf_photokeys', JSON.stringify(Object.keys(photos)));\
+  \} catch(e) \{\}\
+\}\
+\
+function loadLocal() \{\
+  try \{\
+    const d = localStorage.getItem('bargolf_v3');\
+    if (d) \{\
+      const s = JSON.parse(d);\
+      Object.assign(state, s);\
+      // load photos\
+      const keys = JSON.parse(localStorage.getItem('bargolf_photokeys')||'[]');\
+      state.photos = \{\};\
+      keys.forEach(k=>\{ const p=localStorage.getItem('bgp_'+k); if(p) state.photos[k]=p; \});\
+    \}\
+  \} catch(e) \{\}\
+\}\
+\
+// \uc0\u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \
+// LOBBY\
+// \uc0\u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \
+function renderLobby() \{\
+  document.getElementById('lobby-code').textContent = state.roundCode || '----';\
+  document.getElementById('lobby-players-title').textContent = `Players ($\{state.players.length\})`;\
+\
+  document.getElementById('lobby-player-list').innerHTML = state.players.map((p,i)=>`\
+    <div class="flex items-center gap-8" style="padding:8px 0;border-bottom:1px solid var(--border);">\
+      <div class="avatar" style="$\{avatarStyle(i)\}">$\{initials(p)\}</div>\
+      <span class="fw-500">$\{p\}</span>\
+    </div>`).join('');\
+\
+  // QR\
+  const qrEl = document.getElementById('qr-container');\
+  qrEl.innerHTML = '';\
+  const url = `$\{location.origin\}$\{location.pathname\}?join=$\{state.roundCode\}`;\
+  try \{\
+    new QRCode(qrEl, \{ text: url, width: 200, height: 200, colorDark: '#f0f4f8', colorLight: '#111f38' \});\
+  \} catch(e) \{\
+    qrEl.innerHTML = `<p class="text-sm text-muted">$\{url\}</p>`;\
+  \}\
+\}\
+\
+function copyCode() \{\
+  const url = `$\{location.origin\}$\{location.pathname\}?join=$\{state.roundCode\}`;\
+  navigator.clipboard.writeText(url).then(()=>showToast('Link copied!')).catch(()=>showToast(url));\
+\}\
+\
+function startScoring() \{ goTo('scoring'); \}\
+\
+// \uc0\u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \
+// SCORING\
+// \uc0\u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \
+function renderScoring() \{\
+  const h = state.currentHole;\
+  const bn = state.barNames[h] || '';\
+  document.getElementById('scoring-hole-title').textContent = `HOLE $\{h+1\} OF $\{state.numHoles\}`;\
+  document.getElementById('scoring-subtitle').textContent = `$\{bn || 'Bar '+(h+1)\} \'b7 Par $\{PAR\} sips`;\
+  document.getElementById('scoring-bar-name').value = bn;\
+\
+  // Dots\
+  document.getElementById('scoring-dots').innerHTML =\
+    Array.from(\{length:state.numHoles\},(_,i)=>\{\
+      const cls = i===h?'current':(state.scores[i]?'done':'');\
+      return `<div class="hole-dot $\{cls\}" onclick="jumpHole($\{i\})" title="Hole $\{i+1\}"></div>`;\
+    \}).join('');\
+\
+  // Players\
+  document.getElementById('scoring-players').innerHTML = state.players.map((p,pi)=>\{\
+    const cur = state.scores[h]?.[pi];\
+    const photoKey = `$\{h\}_$\{pi\}`;\
+    const photo = state.photos?.[photoKey];\
+    const verified = !!photo;\
+\
+    const sipBtns = [1,2,3,4,5,6].map(n=>\{\
+      let selCls='';\
+      if(cur===n) selCls = n===1?'sel-1':n===2?'sel-2':n===3?'sel-3':n===4?'sel-4':'sel-high';\
+      const lbl = n===1?'\uc0\u55357 \u56691 \u65039 ':n===2?'\u55357 \u56358 ':n===3?'\u9971 ':n===4?'+1':n===5?'+2':'+3';\
+      return `<button class="sip-btn $\{selCls\}" onclick="setScore($\{h\},$\{pi\},$\{n\})">\
+        <span>$\{n\}</span>\
+        <span class="sip-label">$\{lbl\}</span>\
+      </button>`;\
+    \}).join('');\
+\
+    const verBadge = cur!=null ? (verified\
+      ? '<span class="badge badge-green">\uc0\u55357 \u56567  verified</span>'\
+      : '<span class="badge badge-amber">\uc0\u55357 \u56567  unverified</span>')\
+      : '';\
+\
+    const photoHtml = cur!=null ? (photo\
+      ? `<div class="flex items-center gap-8" style="margin-top:10px;">\
+           <img src="$\{photo\}" class="photo-thumb" onclick="removePhoto($\{h\},$\{pi\})" title="Tap to remove" />\
+           <span class="text-xs text-muted">Tap photo to remove</span>\
+         </div>`\
+      : `<label class="photo-upload-area">\
+           <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>\
+           Upload empty glass proof\
+           <input type="file" accept="image/*" capture="environment" style="display:none;" onchange="handlePhoto(event,$\{h\},$\{pi\})" />\
+         </label>`)\
+      : '';\
+\
+    return `<div class="player-block">\
+      <div class="flex items-center justify-between mb-8">\
+        <div class="flex items-center gap-8">\
+          <div class="avatar" style="$\{avatarStyle(pi)\}">$\{initials(p)\}</div>\
+          <span class="fw-500">$\{p\}</span>\
+        </div>\
+        $\{verBadge\}\
+      </div>\
+      <div class="sip-grid">$\{sipBtns\}</div>\
+      $\{photoHtml\}\
+    </div>`;\
+  \}).join('');\
+\
+  // Next / finish button\
+  const nextBtn = document.getElementById('btn-next');\
+  document.getElementById('btn-prev').disabled = h===0;\
+  if (h===state.numHoles-1) \{\
+    nextBtn.innerHTML = 'Finish round <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>';\
+    nextBtn.onclick = ()=>goTo('summary');\
+  \} else \{\
+    nextBtn.innerHTML = 'Next hole <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';\
+    nextBtn.onclick = nextHole;\
+  \}\
+\}\
+\
+function saveBarName() \{\
+  const h = state.currentHole;\
+  state.barNames[h] = document.getElementById('scoring-bar-name').value;\
+  document.getElementById('scoring-subtitle').textContent = `$\{state.barNames[h]||'Bar '+(h+1)\} \'b7 Par $\{PAR\} sips`;\
+  saveLocal(); pushToFirebase();\
+\}\
+\
+function setScore(hole, pi, val) \{\
+  if (!state.scores[hole]) state.scores[hole] = \{\};\
+  state.scores[hole][pi] = val;\
+  saveLocal(); pushToFirebase(); renderScoring();\
+\}\
+\
+function handlePhoto(e, hole, pi) \{\
+  const file = e.target.files[0]; if (!file) return;\
+  const reader = new FileReader();\
+  reader.onload = ev => \{\
+    if (!state.photos) state.photos=\{\};\
+    state.photos[`$\{hole\}_$\{pi\}`] = ev.target.result;\
+    saveLocal(); renderScoring();\
+  \};\
+  reader.readAsDataURL(file);\
+\}\
+\
+function removePhoto(hole, pi) \{\
+  if (state.photos) \{ delete state.photos[`$\{hole\}_$\{pi\}`]; try \{ localStorage.removeItem(`bgp_$\{hole\}_$\{pi\}`); \} catch(e)\{\} \}\
+  saveLocal(); renderScoring();\
+\}\
+\
+function nextHole() \{\
+  if (state.currentHole < state.numHoles-1) \{\
+    state.currentHole++; saveLocal(); pushToFirebase(); renderScoring();\
+  \}\
+\}\
+\
+function prevHole() \{\
+  if (state.currentHole>0) \{\
+    state.currentHole--; saveLocal(); pushToFirebase(); renderScoring();\
+  \}\
+\}\
+\
+function jumpHole(i) \{ state.currentHole=i; saveLocal(); pushToFirebase(); renderScoring(); \}\
+\
+// \uc0\u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \
+// LEADERBOARD\
+// \uc0\u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \
+function getTotals() \{\
+  return state.players.map((p,pi)=>\{\
+    let total=0,played=0;\
+    for(let h=0;h<state.numHoles;h++)\{\
+      const s=state.scores[h]?.[pi];\
+      if(s!==undefined)\{total+=s;played++;\}\
+    \}\
+    const verified = Object.keys(state.photos||\{\}).filter(k=>k.startsWith(`$\{state.currentHole\}_$\{pi\}`) || true).filter(k=>\{\
+      const parts=k.split('_'); return parts[1]===String(pi) && parseInt(parts[0])<state.numHoles;\
+    \}).length;\
+    const totalVerified = Object.keys(state.photos||\{\}).filter(k=>\{ const p2=k.split('_'); return p2[1]===String(pi); \}).length;\
+    return \{name:p,idx:pi,total,played,verified:totalVerified\};\
+  \}).sort((a,b)=>\{\
+    if(!a.played&&!b.played) return 0;\
+    if(!a.played) return 1; if(!b.played) return -1;\
+    return a.total-b.total;\
+  \});\
+\}\
+\
+function relPar(total,holes) \{\
+  const diff=total-(holes*PAR);\
+  if(diff<=-holes) return \{label:'\uc0\u55357 \u56691 \u65039 ',cls:'badge-purple'\};\
+  if(diff<0) return \{label:diff,cls:'badge-green'\};\
+  if(diff===0) return \{label:'E',cls:'badge-gray'\};\
+  if(diff===1) return \{label:'+1',cls:'badge-amber'\};\
+  return \{label:'+'+diff,cls:'badge-red'\};\
+\}\
+\
+function cellClass(s) \{\
+  if(s===1) return 'sc-hole-in-one';\
+  if(s===2) return 'sc-birdie';\
+  if(s===3) return 'sc-par';\
+  if(s===4) return 'sc-bogey';\
+  return 'sc-double';\
+\}\
+\
+function renderLeaderboard() \{\
+  const sorted = getTotals();\
+  document.getElementById('lb-list').innerHTML = sorted.map((p,rank)=>\{\
+    const rel = p.played>0?relPar(p.total,p.played):null;\
+    return `<div class="lb-row">\
+      <div class="lb-rank">$\{p.played>0?rank+1:'\'96'\}</div>\
+      <div class="avatar" style="$\{avatarStyle(p.idx)\}">$\{initials(p.name)\}</div>\
+      <div>\
+        <div class="lb-name">$\{p.name\}</div>\
+        <div class="lb-holes">$\{p.played\}/$\{state.numHoles\} holes \'b7 \uc0\u55357 \u56567  $\{p.verified\}</div>\
+      </div>\
+      $\{rel?`<span class="badge $\{rel.cls\}">$\{rel.label\}</span>`:'<span></span>'\}\
+      <div class="lb-score">$\{p.played>0?p.total:'\'96'\}</div>\
+    </div>`;\
+  \}).join('');\
+\
+  // Scorecard\
+  const hdrCells = Array.from(\{length:state.numHoles\},(_,i)=>`<th>$\{state.barNames[i]?(state.barNames[i].slice(0,4)):i+1\}</th>`).join('');\
+  const parRow = `<tr style="opacity:0.6;"><td style="text-align:left;padding:6px 4px;font-size:11px;color:var(--text3);">Par</td>$\{Array.from(\{length:state.numHoles\},()=>`<td class="sc-par"><span class="sc-cell">$\{PAR\}</span></td>`).join('')\}<td style="font-weight:600;">$\{state.numHoles*PAR\}</td></tr>`;\
+  const rows = state.players.map((p,pi)=>\{\
+    const cells = Array.from(\{length:state.numHoles\},(_,h)=>\{\
+      const s=state.scores[h]?.[pi];\
+      if(s===undefined) return '<td>\'96</td>';\
+      return `<td><span class="sc-cell $\{cellClass(s)\}">$\{s\}</span></td>`;\
+    \}).join('');\
+    let tot=0,played=0;\
+    for(let h=0;h<state.numHoles;h++)\{const s=state.scores[h]?.[pi];if(s!==undefined)\{tot+=s;played++;\}\}\
+    return `<tr><td style="text-align:left;padding:6px 4px;font-size:13px;white-space:nowrap;">$\{p\}</td>$\{cells\}<td style="font-weight:600;font-family:var(--font-mono);">$\{played>0?tot:'\'96'\}</td></tr>`;\
+  \}).join('');\
+  document.getElementById('scorecard').innerHTML = `<thead><tr><th style="text-align:left;">Player</th>$\{hdrCells\}<th>Tot</th></tr>$\{parRow\}</thead><tbody>$\{rows\}</tbody>`;\
+\}\
+\
+function switchTab(tab) \{\
+  document.getElementById('tab-live-btn').classList.toggle('active',tab==='live');\
+  document.getElementById('tab-card-btn').classList.toggle('active',tab==='card');\
+  document.getElementById('tab-live').style.display=tab==='live'?'block':'none';\
+  document.getElementById('tab-card').style.display=tab==='card'?'block':'none';\
+\}\
+\
+// \uc0\u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \
+// SUMMARY\
+// \uc0\u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \
+function renderSummary() \{\
+  const sorted = getTotals();\
+  const winner = sorted[0];\
+  const totalPar = state.numHoles*PAR;\
+  let html='';\
+\
+  if(winner&&winner.played>0) \{\
+    const diff=winner.total-totalPar;\
+    html+=`<div class="winner-banner">\
+      <div class="winner-trophy">\uc0\u55356 \u57286 </div>\
+      <div class="winner-name">$\{winner.name\}</div>\
+      <p class="text-sm text-muted" style="margin-top:6px;">$\{winner.total\} sips total \'b7 $\{diff===0?'Even par':diff>0?'+'+diff+' over par':Math.abs(diff)+' under par'\}</p>\
+    </div>`;\
+  \}\
+\
+  html+=`<div class="stat-grid">\
+    <div class="stat-card"><div class="stat-val">$\{state.players.length\}</div><div class="stat-lbl">Players</div></div>\
+    <div class="stat-card"><div class="stat-val">$\{state.numHoles\}</div><div class="stat-lbl">Holes</div></div>\
+    <div class="stat-card"><div class="stat-val">$\{totalPar\}</div><div class="stat-lbl">Par total</div></div>\
+  </div>`;\
+\
+  html+=`<div class="card"><h3>Final standings</h3>`;\
+  html+=sorted.map((p,i)=>\{\
+    const rel=p.played>0?relPar(p.total,p.played):null;\
+    const medal=['\uc0\u55358 \u56647 ','\u55358 \u56648 ','\u55358 \u56649 '][i]||(i+1+'.');\
+    return `<div class="lb-row">\
+      <div style="font-size:$\{i<3?'20px':'14px'\};text-align:center;">$\{medal\}</div>\
+      <div class="avatar" style="$\{avatarStyle(p.idx)\}">$\{initials(p.name)\}</div>\
+      <div>\
+        <div class="lb-name">$\{p.name\}</div>\
+        <div class="lb-photos">\uc0\u55357 \u56567  $\{p.verified\} verified</div>\
+      </div>\
+      $\{rel?`<span class="badge $\{rel.cls\}">$\{rel.label\}</span>`:'<span></span>'\}\
+      <div class="lb-score">$\{p.played>0?p.total:'\'96'\}</div>\
+    </div>`;\
+  \}).join('');\
+  html+=`</div>`;\
+\
+  document.getElementById('summary-content').innerHTML=html;\
+\}\
+\
+function confirmNewRound() \{\
+  if(confirm('Start a new round? All scores will be cleared.')) \{\
+    if(roundRef&&!offlineMode) roundRef.remove().catch(()=>\{\});\
+    state=\{roundCode:null,roundName:'',numHoles:9,players:[],scores:\{\},barNames:\{\},photos:\{\},currentHole:0,isHost:false\};\
+    createPlayers=[];\
+    saveLocal();\
+    goTo('home');\
+    renderCreatePlayers();\
+  \}\
+\}\
+\
+// \uc0\u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \
+// TOAST\
+// \uc0\u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \
+let toastTimer;\
+function showToast(msg) \{\
+  const t=document.getElementById('toast');\
+  t.textContent=msg; t.classList.add('show');\
+  clearTimeout(toastTimer);\
+  toastTimer=setTimeout(()=>t.classList.remove('show'),2500);\
+\}\
+\
+// \uc0\u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \
+// DEEP LINK: ?join=CODE\
+// \uc0\u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \
+function checkDeepLink() \{\
+  const params=new URLSearchParams(location.search);\
+  const code=params.get('join');\
+  if(code) \{\
+    document.getElementById('join-code-input').value=code.toUpperCase();\
+    joinRound();\
+  \}\
+\}\
+\
+// \uc0\u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \
+// BOOT\
+// \uc0\u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \u9472 \
+initFirebase();\
+loadLocal();\
+renderCreatePlayers();\
+// Re-attach to existing round if page was refreshed\
+if(state.roundCode&&!offlineMode&&db) \{\
+  roundRef=db.ref('rounds/'+state.roundCode);\
+  listenToRound();\
+\}\
+checkDeepLink();\
+</script>\
+</body>\
+</html>}
