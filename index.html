@@ -270,6 +270,11 @@ Add player
 </div>
 <div id="create-players"></div>
 </div>
+<button class="btn btn-primary btn-full" onclick="createRound()" style="font-size:16px;height:52px;">
+  Start Round
+  <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+</button>
+</div>
 const names = createPlayers.map((p, i) => p.name.trim() || `Player ${i + 1}`);
 Start Round
 <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -473,8 +478,7 @@ const avatars = document.querySelectorAll('#create-players .avatar');
 if (avatars[i]) avatars[i].textContent = createPlayers[i].name ? initials(createPlayers[i].name) : i+1;
 }
 function removeCreatePlayer(i) { createPlayers.splice(i,1); renderCreatePlayers(); }
-async function createRound() {
-const names = createPlayers.map(p=>p.name.trim()||`Player ${createPlayers.indexOf(p)+1}`);
+async function createRound() {const names = createPlayers.map((p, i) => p.name.trim() || `Player ${i + 1}`);
 if (!names.length) { showToast('Add at least one player!'); return; }
 const code = genCode();
 state.roundCode = code;
